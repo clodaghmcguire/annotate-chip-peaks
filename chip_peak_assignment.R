@@ -1,8 +1,10 @@
 ## loading packages
 
 library(ChIPseeker)
-library(TxDb.Hsapiens.UCSC.hg18.knownGene)
-txdb <- TxDb.Hsapiens.UCSC.hg18.knownGene
+#library(TxDb.Hsapiens.UCSC.hg18.knownGene)
+#txdb <- TxDb.Hsapiens.UCSC.hg18.knownGene
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
 library(clusterProfiler)
 
 ## read in list of ribosomal protein genes
@@ -12,8 +14,8 @@ genes = read.delim("ribsome_geneset.txt")
 ## datasets can be downloaded from GSE36994
 ## datasets are in hg18 but could be converted to hg19 or hg38 using UCSC liftover
 ## annotate peaks
-peakAnno_GSM970258_A <- annotatePeak('GSM970258_GATA1-A_peaks.bed.gz', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
-peakAnno_GSM970257_F <- annotatePeak('GSM970257_GATA1-F_peaks.bed.gz', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
+peakAnno_GSM970258_A <- annotatePeak('GSM970258_GATA1-A_hg19.bed.gz', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
+peakAnno_GSM970257_F <- annotatePeak('GSM970257_GATA1-F_hg19.bed.gz', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
 ## get list of assigned peaks
 all_peaks_GSM970258_A <- as.GRanges(peakAnno_GSM970258_A) #use GRanges rather than data.frame so that after filtering you can use covplot
 head(all_peaks_GSM970258_A)
@@ -24,9 +26,11 @@ head(all_peaks_GSM970257_F)
 filtered_peaks_GSM970258_A <- all_peaks_GSM970258_A[all_peaks_GSM970258_A$geneId %in% genes$gene_id, ]
 head(filtered_peaks_GSM970258_A)
 filtered_peaks_GSM970257_F <- all_peaks_GSM970257_F[all_peaks_GSM970257_F$geneId %in% genes$gene_id, ]
-filename <- file.path(getwd(), "RPgenePeaks_GSM970258_A")
+#filename <- file.path(getwd(), "RPgenePeaks_GSM970258_A")
+filename <- file.path(getwd(), "RPgenePeaks_GSM970258_A_hg19")
 write.csv(x=filtered_peaks_GSM970258_A, file=filename)
-filename <- file.path(getwd(), "RPgenePeaks_GSM970257_F")
+#filename <- file.path(getwd(), "RPgenePeaks_GSM970257_F")
+filename <- file.path(getwd(), "RPgenePeaks_GSM970257_F_hg19")
 write.csv(x=filtered_peaks_GSM970257_F, file=filename)
 
 GSM970258_A_peak <- readPeakFile('GSM970258_GATA1-A_peaks.bed.gz')
