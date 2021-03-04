@@ -114,9 +114,9 @@
     },
     "DelayedArray": {
       "Package": "DelayedArray",
-      "Version": "0.16.1",
+      "Version": "0.16.2",
       "Source": "Bioconductor",
-      "Hash": "98a62a8040f67b43dad034e58f288d51"
+      "Hash": "2fc4c41dfafe33346e759d05bc3b372f"
     },
     "Formula": {
       "Package": "Formula",
@@ -175,10 +175,10 @@
     },
     "Hmisc": {
       "Package": "Hmisc",
-      "Version": "4.4-2",
+      "Version": "4.5-0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "66458e906b2112a8b1639964efd77d7c"
+      "Hash": "6d0e5aada1900c1bc778c00573aefd53"
     },
     "IRanges": {
       "Package": "IRanges",
@@ -227,10 +227,10 @@
     },
     "MatrixModels": {
       "Package": "MatrixModels",
-      "Version": "0.4-1",
+      "Version": "0.5-0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "d57ac35220b39c591388ab3a080f9cbe"
+      "Hash": "366a8838782928e398b8762c932a42a3"
     },
     "ProtGenerics": {
       "Package": "ProtGenerics",
@@ -396,12 +396,25 @@
       "Repository": "CRAN",
       "Hash": "644043219fc24e190c2f620c1a380a69"
     },
+    "bamsignals": {
+      "Package": "bamsignals",
+      "Version": "1.22.0",
+      "Source": "Bioconductor",
+      "Hash": "cbf0e247a58cfc34442b04ab83ed5975"
+    },
     "base64enc": {
       "Package": "base64enc",
       "Version": "0.1-3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "543776ae6848fde2f48ff3816d0628bc"
+    },
+    "bezier": {
+      "Package": "bezier",
+      "Version": "1.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a02b18c7fe82856f3e9a7e2f2a643435"
     },
     "biomaRt": {
       "Package": "biomaRt",
@@ -664,10 +677,10 @@
     },
     "farver": {
       "Package": "farver",
-      "Version": "2.0.3",
+      "Version": "2.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "dad6793a5a1f73c8e91f1a1e3e834b05"
+      "Hash": "c98eb5133d9cb9e1622b8691487f11bb"
     },
     "fastmap": {
       "Package": "fastmap",
@@ -876,6 +889,12 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "98138e0994d41508c7a6b84a0600cfcb"
+    },
+    "karyoploteR": {
+      "Package": "karyoploteR",
+      "Version": "1.16.0",
+      "Source": "Bioconductor",
+      "Hash": "aa4f6bdcfdde15d1a149e4baf9a3d181"
     },
     "knitr": {
       "Package": "knitr",
@@ -1146,10 +1165,10 @@
     },
     "ps": {
       "Package": "ps",
-      "Version": "1.5.0",
+      "Version": "1.6.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ebaed51a03411fd5cfc1e12d9079b353"
+      "Hash": "32620e2001c1dce1af49c49dccbb9420"
     },
     "purrr": {
       "Package": "purrr",
