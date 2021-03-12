@@ -14,8 +14,8 @@ genes = read.delim("ribsome_geneset.txt")
 ## datasets can be downloaded from GSE36994
 ## datasets are in hg18 but could be converted to hg19 or hg38 using UCSC liftover
 ## annotate peaks
-peakAnno_GSM970258_A <- annotatePeak('GSM970258_GATA1-A_hg19.bed.gz', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
-peakAnno_GSM970257_F <- annotatePeak('GSM970257_GATA1-F_hg19.bed.gz', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
+peakAnno_GSM970258_A <- annotatePeak('GSM970258_GATA1-A_hg19.bed', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
+peakAnno_GSM970257_F <- annotatePeak('GSM970257_GATA1-F_hg19.bed', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
 ## get list of assigned peaks
 all_peaks_GSM970258_A <- as.GRanges(peakAnno_GSM970258_A) #use GRanges rather than data.frame so that after filtering you can use covplot
 head(all_peaks_GSM970258_A)
@@ -136,3 +136,132 @@ dev.off()
 plotDistToTss(peakAnnoList)
 dev.copy(png,'DistToTSS.png')
 dev.off()
+
+
+##############################
+#mouse analysis
+##############################
+library(ChIPseeker)
+library(TxDb.Mmusculus.UCSC.mm9.knownGene)
+txdb <- TxDb.Mmusculus.UCSC.mm9.knownGene
+library(clusterProfiler)
+
+mouse_genes = read.delim("mouse_RPgenes.tsv")
+
+#replicate 1
+peakAnno_rep1 <- annotatePeak('mouse_replicate1.bed', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb = "org.Mm.eg.db")
+all_peaks_mouse1 <- as.GRanges(peakAnno_rep1) #use GRanges rather than data.frame so that after filtering you can use covplot
+filtered_peaks_mouse1 <- all_peaks_mouse1[all_peaks_mouse1$geneId %in% mouse_genes$Gene.ID, ]
+head(filtered_peaks_mouse1)
+unique(filtered_peaks_mouse1$SYMBOL)
+filename <- file.path(getwd(), "RPgenePeaks_mouse_rep1")
+write.csv(x=filtered_peaks_mouse1, file=filename)
+
+#replicate 2
+peakAnno_rep2 <- annotatePeak('mouse_replicate2.bed', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb = "org.Mm.eg.db")
+all_peaks_mouse2 <- as.GRanges(peakAnno_rep2) #use GRanges rather than data.frame so that after filtering you can use covplot
+filtered_peaks_mouse2 <- all_peaks_mouse2[all_peaks_mouse2$geneId %in% mouse_genes$Gene.ID, ]
+head(filtered_peaks_mouse2)
+unique(filtered_peaks_mouse2$SYMBOL)
+filename <- file.path(getwd(), "RPgenePeaks_mouse_rep2")
+write.csv(x=filtered_peaks_mouse2, file=filename)
+
+plotAnnoPie(peakAnno_rep1)
+dev.copy(png,'annopie_mouse1.png')
+dev.off()
+plotAnnoPie(peakAnno_rep2)
+dev.copy(png,'annopie_mouse2.png')
+dev.off()
+
+plotAnnoBar(peakAnno_rep1)
+dev.copy(png,'annobar_mouse1.png')
+dev.off()
+plotAnnoBar(peakAnno_rep2)
+dev.copy(png,'annobar_mouse2.png')
+dev.off()
+
+plotDistToTSS(peakAnno_rep1)
+dev.copy(png,'DistToTSS_mouse1.png')
+dev.off()
+plotDistToTSS(peakAnno_rep2)
+dev.copy(png,'DistToTSS_mouse2.png')
+dev.off()
+
+
+replicate1_peak <- readPeakFile('mouse_replicate1.bed')
+replicate2_peak <- readPeakFile('mouse_replicate2.bed')
+
+covplot(replicate1_peak, weightCol = 'V5')
+dev.copy(png,'peak_coverage_mouse1.png')
+dev.off()
+covplot(replicate2_peak, weightCol = 'V5')
+dev.copy(png,'peak_coverage_mouse2.png')
+dev.off()
+covplot(filtered_peaks_mouse1, weightCol = 'V5')
+dev.copy(png,'peak_coverage_mouse1_RPgenes.png')
+dev.off()
+covplot(filtered_peaks_mouse2, weightCol = 'V5')
+dev.copy(png,'peak_coverage_mouse2_RPgenes.png')
+dev.off()
+
+promoter <- getPromoters(TxDb=txdb, upstream=10000, downstream=10000)
+tagMatrix_replicate1 <- getTagMatrix(replicate1_peak, windows=promoter)
+tagMatrix_replicate2 <- getTagMatrix(replicate2_peak, windows=promoter)
+tagHeatmap(tagMatrix_replicate1, xlim=c(-10000, 10000), color="red")
+dev.copy(png,'heatmap_mouse1.png')
+dev.off()
+tagHeatmap(tagMatrix_replicate2, xlim=c(-10000, 10000), color="red")
+dev.copy(png,'heatmap_mouse2.png')
+dev.off()
+
+## get binding profile
+plotAvgProf(tagMatrix_replicate1, xlim=c(-10000, 10000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
+dev.copy(png,'avgprof_mouse1.png')
+dev.off()
+plotAvgProf(tagMatrix_replicate2, xlim=c(-10000, 10000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
+dev.copy(png,'avgprof_mouse2.png')
+dev.off()
+
+
+
+############################
+## chromotin marks ##
+adult_files <- list(GATA1 = 'GSM970258_GATA1-A_hg19.bed', 
+                    PolII = 'GSM908069_PolII-A_peaks_hg19.bed',
+                    H3K27ac = 'GSM908051_H3K27ac-A_peaks_hg19.bed',
+                    #H3K9ac = 'GSM908049_H3K9ac-A_peaks_hg19.bed',
+                    H3K36me3 = 'GSM908047_H3K36me3-A_peaks_hg19.bed',
+                    #H3K36me2 = 'GSM908045_H3K36me2-A_peaks_hg19.bed',
+                    H3K27me3 = 'GSM908043_H3K27me3-A_peaks_hg19.bed',
+                    H3K9me3 = 'GSM908041_H3K9me3-A_peaks_hg19.bed',
+                    H3K4me3 = 'GSM908039_H3K4me3-A_peaks_hg19.bed',
+                    #H3K4me2 = 'GSM908037_H3K4me2-A_peaks_hg19.bed',
+                    H3K4me1 = 'GSM908035_H3K4me1-A_peaks_hg19.bed')
+
+promoter <- getPromoters(TxDb=txdb, upstream=3000, downstream=3000)
+tagMatrixList <- lapply(adult_files, getTagMatrix, windows=promoter)
+plotAvgProf(tagMatrixList, xlim=c(-3000, 3000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
+dev.copy(png,'avgprof_chromatin_marks.png')
+dev.off()
+plotAvgProf(tagMatrixList, xlim=c(-3000, 3000), conf=0.95,resample=500, facet="row")
+dev.copy(png,'avgprof_conf_chromatin_marks.png')
+dev.off()
+par(mar=c(1,1,1,1))
+tagHeatmap(tagMatrixList, xlim=c(-3000, 3000), color=NULL)
+dev.copy(png, 'heatmap_chromatin_marks.png')
+dev.off()
+peakAnnoList <- lapply(adult_files, annotatePeak, TxDb=txdb, tssRegion=c(-3000, 3000), verbose=FALSE)
+plotAnnoBar(peakAnnoList)
+dev.copy(png,'annobar_chromatin_marks.png')
+dev.off()
+plotDistToTss(peakAnnoList)
+dev.copy(png,'DistToTSS_chromatin_marks.png')
+dev.off()
+
+
+#all_genes <- lapply(peakAnnoList, function(i) as.data.frame(i)$geneId)
+rp_gene_peaks <- lapply(peakAnnoList, function(i) as.data.frame(i)[as.data.frame(i)$geneId %in% genes$gene_id, ])
+sapply(names(rp_gene_peaks), 
+       function (x) write.table(rp_gene_peaks[[x]], file=paste(x, "csv", sep=".") )   )
+rp_genes <- lapply(peakAnnoList, function(i) as.data.frame(i)$geneId[as.data.frame(i)$geneId %in% genes$gene_id])
+vennplot(rp_genes)

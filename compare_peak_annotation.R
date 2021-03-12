@@ -11,8 +11,11 @@ chipanno_adult$SYMBOL <- gene_list$Symbol[match(chipanno_adult$feature, gene_lis
 chipanno_fetal = read.csv("RPgenePeaks_GSM970257_F_hg19_chipanno")
 chipanno_fetal$SYMBOL <- gene_list$Symbol[match(chipanno_fetal$feature, gene_list$Gene.ID)] 
 
+adult_manual <- read.delim('Adult_filtered_peaks.bed')
+fetal_manual <- read.delim('Fetal_filtered_peaks.bed')
+
 myCol <- brewer.pal(3, "Pastel2")
-venn.diagram(x = list(chipseeker_adult$SYMBOL, chipenrich_adult$gene_symbol, chipanno_adult$SYMBOL), category.names = c("ChIPseeker", "ChIPenrich", "ChIPpeakAnno"), filename = 'gene_overlap_adult.png',
+venn.diagram(x = list(unique(chipseeker_adult$SYMBOL), unique(chipenrich_adult$gene_symbol), unique(chipanno_adult$SYMBOL)), category.names = c("ChIPseeker", "ChIPenrich", "ChIPpeakAnno"), filename = 'gene_overlap_adult.png',
              output=TRUE, imagetype="png" ,
              height = 600 , 
              width = 600 , 
@@ -37,6 +40,8 @@ venn.diagram(x = list(chipseeker_adult$SYMBOL, chipenrich_adult$gene_symbol, chi
              cat.dist = c(0.055, 0.055, 0.085),
              cat.fontfamily = "sans",
              rotation = 1)
+
+
 
 venn.diagram(x = list(chipseeker_fetal$SYMBOL, chipenrich_fetal$gene_symbol, chipanno_fetal$SYMBOL), category.names = c("ChIPseeker", "ChIPenrich", "ChIPpeakAnno"), filename = 'gene_overlap_fetal.png',
              output=TRUE, imagetype="png" ,
@@ -71,6 +76,17 @@ setdiff(fetal_genes, adult_genes)
 
 venn.diagram(x = list(adult_genes, fetal_genes), category.names = c("Adult", "Fetal"), filename = 'gene_overlap_adult_vs_fetal.png',
              output=TRUE, imagetype="png")
+
+venn.diagram(x = list(unique(adult_manual$gene), fetal_manual$gene), category.names = c("Adult", "Fetal"), filename = 'gene_overlap_manual_filter.png',
+             output=TRUE, imagetype="png")
+
+venn.diagram(x = list(adult_genes, unique(adult_manual$gene)), category.names = c("Tools", "Manual"), filename = 'gene_overlap_adult_manual.png',
+             output=TRUE, imagetype="png"
+)
+venn.diagram(x = list(fetal_genes, unique(fetal_manual$gene)), category.names = c("Tools", "Manual"), filename = 'gene_overlap_fetal_manual.png',
+             output=TRUE, imagetype="png"
+)
+
 
 annotated_gene_list <- read.delim("RPgenes_2017report")
 venn.diagram(x = list(adult_genes, fetal_genes, unique(annotated_gene_list$gene_name)), category.names = c("Adult", "Fetal", "2017 report"), filename = 'gene_overlap_with_2017report.png',
