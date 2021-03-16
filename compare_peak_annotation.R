@@ -147,3 +147,71 @@ venn.diagram(x = list(unique(encode_adult$SYMBOL), unique(encode_fetal$SYMBOL), 
              cat.dist = c(0.055, 0.055, 0.085),
              cat.fontfamily = "sans",
              rotation = 1)
+
+
+#### histone marks ####
+GATA1 <- unique(c(chipseeker_adult$SYMBOL, chipenrich_adult$gene_symbol, chipanno_adult$SYMBOL))
+GATA1_manual <- unique(c(GATA1, adult_manual$gene))
+
+#### Pol II and GATA1 ####
+chipseeker_PolII <- read.delim('PolII.txt', sep=' ')
+chipanno_PolII <- read.csv('PolII_peakanno')
+chipenrich_PolII <- read.csv('PolII_chipenrich')
+PolII <- unique(c(chipseeker_PolII$SYMBOL, chipanno_PolII$SYMBOL, chipenrich_PolII$gene_symbol))
+
+venn.diagram(x = list(GATA1, PolII), category.names = c("GATA1", "Pol II"), filename = 'gene_overlap_GATA1_PolII.png',
+             output=TRUE, imagetype="png")
+
+
+venn.diagram(x = list(GATA1_manual, PolII), category.names = c("GATA1", "Pol II"), filename = 'gene_overlap_manualGATA1_PolII.png',
+             output=TRUE, imagetype="png")
+
+#### enhancer marks H3K4me1 and H3K27ac ####
+chipseeker_H3K4me1 <- read.delim('H3K4me1.txt', sep=' ')
+chipanno_H3K4me1 <- read.csv('H3K4me1_peakanno')
+chipenrich_H3K4me1 <- read.csv('H3K4me1_chipenrich')
+H3K4me1 <- unique(c(chipseeker_H3K4me1$SYMBOL, chipanno_H3K4me1$SYMBOL, chipenrich_H3K4me1$gene_symbol))
+
+chipseeker_H3K27ac <- read.delim('H3K27ac.txt', sep=' ')
+chipanno_H3K27ac <- read.csv('H3K27ac_peakanno')
+chipenrich_H3K27ac <- read.csv('H3K27ac_chipenrich')
+H3K27ac <- unique(c(chipseeker_H3K27ac$SYMBOL, chipanno_H3K27ac$SYMBOL, chipenrich_H3K27ac$gene_symbol))
+
+venn.diagram(x = list(GATA1_manual, H3K4me1, H3K27ac), category.names = c("GATA1", "H3K4me1", "H3K27ac"), filename = 'gene_overlap_enhancermarks.png',
+             output=TRUE, imagetype="png")
+
+#### promoter marks H3K4me3 ####
+chipseeker_H3K4me3 <- read.delim('H3K4me3.txt', sep=' ')
+chipanno_H3K4me3 <- read.csv('H3K4me3_peakanno')
+chipenrich_H3K4me3 <- read.csv('H3K4me3_chipenrich')
+H3K4me3 <- unique(c(chipseeker_H3K4me3$SYMBOL, chipanno_H3K4me3$SYMBOL, chipenrich_H3K4me3$gene_symbol))
+
+venn.diagram(x = list(GATA1_manual, H3K4me3), category.names = c("GATA1", "H3K4me3"), filename = 'gene_overlap_manualGATA1_H3K4me3.png',
+             output=TRUE, imagetype="png")
+
+#### transcribed regions in gene bodies H3K36me3 ####
+chipseeker_H3K36me3 <- read.delim('H3K36me3.txt', sep=' ')
+chipanno_H3K36me3 <- read.csv('H3K36me3_peakanno')
+chipenrich_H3K36me3 <- read.csv('H3K36me3_chipenrich')
+H3K36me3 <- unique(c(chipseeker_H3K36me3$SYMBOL, chipanno_H3K36me3$SYMBOL, chipenrich_H3K36me3$gene_symbol))
+
+venn.diagram(x = list(GATA1_manual, H3K36me3), category.names = c("GATA1", "H3K36me3"), filename = 'gene_overlap_manualGATA1_H3K36me3.png',
+             output=TRUE, imagetype="png")
+
+#### polycomb repression H3K27me3 ####
+chipseeker_H3K27me3 <- read.delim('H3K27me3.txt', sep=' ')
+chipanno_H3K27me3 <- read.csv('H3K27me3_peakanno')
+chipenrich_H3K27me3 <- read.csv('H3K27me3_chipenrich')
+H3K27me3 <- unique(c(chipseeker_H3K27me3$SYMBOL, chipanno_H3K27me3$SYMBOL, chipenrich_H3K27me3$gene_symbol))
+
+venn.diagram(x = list(GATA1_manual, H3K27me3), category.names = c("GATA1", "H3K27me3"), filename = 'gene_overlap_manualGATA1_H3K27me3.png',
+             output=TRUE, imagetype="png")
+
+#### heterochromatin H3K9me3 ####
+chipseeker_H3K9me3 <- read.delim('H3K9me3.txt', sep=' ')
+chipanno_H3K9me3 <- read.csv('H3K9me3_peakanno')
+chipenrich_H3K9me3 <- read.csv('H3K9me3_chipenrich')
+H3K9me3 <- unique(c(chipseeker_H3K9me3$SYMBOL, chipanno_H3K9me3$SYMBOL, chipenrich_H3K9me3$gene_symbol))
+
+venn.diagram(x = list(GATA1_manual, H3K9me3), category.names = c("GATA1", "H3K9me3"), filename = 'gene_overlap_manualGATA1_H3K9me3.png',
+             output=TRUE, imagetype="png")

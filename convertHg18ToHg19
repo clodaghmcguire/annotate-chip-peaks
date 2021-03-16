@@ -1,0 +1,47 @@
+UCSC liftover to convert peak bedfile from hg18 to hg19
+download chrom.sizes:
+https://hgdownload.cse.ucsc.edu/goldenpath/hg19/bigZips/
+https://hgdownload.cse.ucsc.edu/goldenpath/hg18/bigZips/
+
+
+conda create -n ucsc -c bioconda ucsc-bedgraphtobigwig
+conda activate ucsc
+conda install -c bioconda ucsc-wigtobigwig
+conda install -c bioconda ucsc-bigwigtobedgraph
+conda install -c bioconda ucsc-liftover
+conda install -c bioconda ucsc-bedgraphtobigwig
+conda install -n ucsc openssl=1.0 ##need to downgrade openssl or ucsc packages don't work
+sudo apt install bedops
+
+##Convert wig from hg18 to hg19
+wigToBigWig GSM908069_PolII-A.wig.gz hg18.chrom.sizes GSM908069_PolII-A.bw && bigWigToBedGraph GSM908069_PolII-A.bw GSM908069_PolII-A.bedGraph && liftOver GSM908069_PolII-A.bedGraph hg18ToHg19.over.chain.gz GSM908069_PolII-A_hg19.bedGraph unMapped && sort -k1,1 -k2,2n GSM908069_PolII-A_hg19.bedGraph > GSM908069_PolII-A_hg19.sort.bedGraph && awk -vOFS="\t" '{ print $1, $2, $3, ".", $4 }' GSM908069_PolII-A_hg19.sort.bedGraph > tmp.bed && bedops --partition tmp.bed | bedmap --echo --mean --delim '\t' - tmp.bed > GSM908069_PolII-A_hg19.split.bedGraph && bedGraphToBigWig GSM908069_PolII-A_hg19.split.bedGraph hg19.chrom.sizes GSM908069_PolII-A_hg19.bw
+
+
+##Convert peak bed from hg18 to hg19
+liftOver GSM970257_GATA1-F_peaks.bed.gz hg18ToHg19.over.chain.gz GSM970257_GATA1-F_peaks_hg19.bed GSM970257_unmapped
+liftOver GSM970258_GATA1-A_peaks.bed.gz hg18ToHg19.over.chain.gz GSM970258_GATA1-A_peaks_hg19.bed GSM970258_unmapped
+
+Hg18
+HBB gene: chr11:5,199,527-5,262,438
+KLF1: chr19:12,856,237-12,859,017
+NFE2L2: chr2:177,785,865-177,855,518
+RPS9: chr19:59,386,353-59,413,512
+RPS19: chr19:47,051,605-47,071,546
+
+Hg19
+HBB gene: chr11:5,237,636-5,317,091
+KLF1: chr19:12,991,063-13,002,190
+NFE2L2: chr2:178,072,561-178,155,111
+RPS9: chr19:54,697,951-54,722,076
+RPS19: chr19:42,357,484-42,383,497
+RPS26: chr12:56,429,469-56,447,148
+
+
+Manually filter peak bedfile to those 10kb upstream and downstream of RP genes
+sudo apt install bedtools
+sort-bed GSM970258_GATA1-A_peaks.bed > Adult_sorted_peaks.bed
+bedtools window -a hglft_genome_3d617_4fe3c0.bed -b Adult_sorted_peaks.bed -w 10000 > Adult_filtered_peaks.bed
+
+sort-bed GSM970257_GATA1-F_peaks.bed > Fetal_sorted_peaks.bed
+bedtools window -a hglft_genome_3d617_4fe3c0.bed -b Fetal_sorted_peaks.bed -w 10000 > Fetal_filtered_peaks.bed
+

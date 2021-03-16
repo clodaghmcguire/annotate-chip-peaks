@@ -50,3 +50,49 @@ dev.off()
 plot_gene_coverage(peaks = 'GSM970257_GATA1-F_hg19.bed.gz', locusdef = 'nearest_tss',  genome = 'hg19')
 dev.copy(png,'fetal_coverage_vs_locuslength.png')
 dev.off()
+
+
+
+#### histone marks ####
+PolII <- read_bed('GSM908069_PolII-A_peaks_hg19.bed')
+H3K27ac <- read_bed('GSM908051_H3K27ac-A_peaks_hg19.bed')
+H3K36me3 <- read_bed('GSM908047_H3K36me3-A_peaks_hg19.bed')
+H3K27me3 <- read_bed('GSM908043_H3K27me3-A_peaks_hg19.bed')
+H3K9me3 <- read_bed('GSM908041_H3K9me3-A_peaks_hg19.bed')
+H3K4me3 <- read_bed('GSM908039_H3K4me3-A_peaks_hg19.bed')
+H3K4me1 <- read_bed('GSM908035_H3K4me1-A_peaks_hg19.bed')
+
+assigned_peaks <- assign_peaks(peaks = PolII, locusdef = locusdef.hg19.nearest_tss, tss = tss.hg19)
+RP_peaks <- assigned_peaks[assigned_peaks$nearest_tss_gene_id %in% genes$gene_id, ]
+filename <- file.path(getwd(), "PolII_chipenrich")
+write.csv(x=adult_RP_peaks, file=filename)
+
+assigned_peaks <- assign_peaks(peaks = H3K27ac, locusdef = locusdef.hg19.nearest_tss, tss = tss.hg19)
+RP_peaks <- assigned_peaks[assigned_peaks$nearest_tss_gene_id %in% genes$gene_id, ]
+filename <- file.path(getwd(), "H3K27ac_chipenrich")
+write.csv(x=adult_RP_peaks, file=filename)
+
+assigned_peaks <- assign_peaks(peaks = H3K36me3, locusdef = locusdef.hg19.nearest_tss, tss = tss.hg19)
+RP_peaks <- assigned_peaks[assigned_peaks$nearest_tss_gene_id %in% genes$gene_id, ]
+filename <- file.path(getwd(), "H3K36me3_chipenrich")
+write.csv(x=adult_RP_peaks, file=filename)
+
+assigned_peaks <- assign_peaks(peaks = H3K27me3, locusdef = locusdef.hg19.nearest_tss, tss = tss.hg19)
+RP_peaks <- assigned_peaks[assigned_peaks$nearest_tss_gene_id %in% genes$gene_id, ]
+filename <- file.path(getwd(), "H3K27me3_chipenrich")
+write.csv(x=adult_RP_peaks, file=filename)
+
+assigned_peaks <- assign_peaks(peaks = H3K4me3, locusdef = locusdef.hg19.nearest_tss, tss = tss.hg19)
+RP_peaks <- assigned_peaks[assigned_peaks$nearest_tss_gene_id %in% genes$gene_id, ]
+filename <- file.path(getwd(), "H3K4me3_chipenrich")
+write.csv(x=adult_RP_peaks, file=filename)
+
+assigned_peaks <- assign_peaks(peaks = H3K9me3, locusdef = locusdef.hg19.nearest_tss, tss = tss.hg19)
+RP_peaks <- assigned_peaks[assigned_peaks$nearest_tss_gene_id %in% genes$gene_id, ]
+filename <- file.path(getwd(), "H3K9me3_chipenrich")
+write.csv(x=adult_RP_peaks, file=filename)
+
+assigned_peaks <- assign_peaks(peaks = H3K4me1, locusdef = locusdef.hg19.nearest_tss, tss = tss.hg19)
+RP_peaks <- assigned_peaks[assigned_peaks$nearest_tss_gene_id %in% genes$gene_id, ]
+filename <- file.path(getwd(), "H3K4me1_chipenrich")
+write.csv(x=adult_RP_peaks, file=filename)
