@@ -94,3 +94,31 @@ gene_list <- addGeneIDs(annotatedPeak_filtered$feature, orgAnn="org.Hs.eg.db", I
 annotatedPeak_filtered$SYMBOL <- gene_list$symbol[match(annotatedPeak_filtered$feature, gene_list$entrez_id)] 
 filename <- file.path(getwd(), "H3K4me1_peakanno")
 write.csv(x=annotatedPeak_filtered, file=filename)
+
+
+##################################
+#### mouse data ####
+##################################
+library(ChIPpeakAnno)
+mouse_genes = read.delim("mouse_RPgenes.tsv")
+library(TxDb.Mmusculus.UCSC.mm9.knownGene)
+annoData <- toGRanges(TxDb.Mmusculus.UCSC.mm9.knownGene, feature="gene")
+
+mouse_replicate1 <- toGRanges('mouse_replicate1.bed', format="BED", header=FALSE)
+mouse_replicate2 <- toGRanges('mouse_replicate2.bed', format="BED", header=FALSE)
+
+annotatedPeak <- annotatePeakInBatch(mouse_replicate1, AnnotationData = annoData)
+pie1(table(as.data.frame(annotatedPeak)$insideFeature))
+annotatedPeak_filtered <- annotatedPeak[annotatedPeak$feature %in% mouse_genes$Gene.ID, ]
+gene_list <- addGeneIDs(annotatedPeak_filtered$feature, orgAnn="org.Mm.eg.db", IDs2Add=c("symbol"), feature_id_type = 'entrez_id')
+annotatedPeak_filtered$SYMBOL <- gene_list$symbol[match(annotatedPeak_filtered$feature, gene_list$entrez_id)] 
+filename <- file.path(getwd(), "mouse_rep1_peakanno")
+write.csv(x=annotatedPeak_filtered, file=filename)
+
+annotatedPeak <- annotatePeakInBatch(mouse_replicate2, AnnotationData = annoData)
+pie1(table(as.data.frame(annotatedPeak)$insideFeature))
+annotatedPeak_filtered <- annotatedPeak[annotatedPeak$feature %in% mouse_genes$Gene.ID, ]
+gene_list <- addGeneIDs(annotatedPeak_filtered$feature, orgAnn="org.Mm.eg.db", IDs2Add=c("symbol"), feature_id_type = 'entrez_id')
+annotatedPeak_filtered$SYMBOL <- gene_list$symbol[match(annotatedPeak_filtered$feature, gene_list$entrez_id)] 
+filename <- file.path(getwd(), "mouse_rep2_peakanno")
+write.csv(x=annotatedPeak_filtered, file=filename)

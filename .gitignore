@@ -5,3 +5,15 @@
 ENCODE
 genes
 graphs
+peak_sequences.txt
+mouse
+intermediate_files
+histone_marks
+hg19.chrom.sizes
+hglft_genome_adult.bed
+hglft_genome_fetal.bed
+hg18ToHg19.over.chain.gz
+hg18.chrom.sizes
+assigned_peaks
+RPgenes_2017report
+.idea

@@ -1,4 +1,4 @@
-chr	start	end	name
+#chr	start	end	name
 chr11	64888102	64889606	FAU
 chrX	153626406	153630680	RPL10
 chr6	35436178	35438558	RPL10A
