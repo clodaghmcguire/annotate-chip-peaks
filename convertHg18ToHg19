@@ -50,3 +50,7 @@ bedtools window -a hglft_genome_3d617_4fe3c0.bed -b Fetal_sorted_peaks.bed -w 10
 #replace peak annotation in bed file
 sed -e 's/Filter_SAM_or_BAM__output_SAM_or_BAM_on_data_28__bam_peak/peak/g' mouse_replicate2.bed >mouse_replicate2_updated.bed
 
+
+#filter peak file to only peaks with a FDR of 10
+awk '{if ($9 >=10) print $0}' GATA1_macs3_peaks.narrowPeak > GATA1_macs3_morestringent.bed
+
