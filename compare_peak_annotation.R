@@ -184,3 +184,20 @@ H3K9me3 <- unique(c(chipseeker_H3K9me3$SYMBOL, chipanno_H3K9me3$SYMBOL, chipenri
 
 venn.diagram(x = list(GATA1, H3K9me3), category.names = c("GATA1", "H3K9me3"), filename = './GSE36994_hg19/GATA1_histone_overlap/GATA1_H3K9me3.png',
              output=TRUE, imagetype="png")
+
+#### GATA1 and other TFs in GSE43625 dataset ####
+GATA1_GSE43625 <- read.csv('./GSE43625_hg19/assigned_peaks/GATA1.csv')
+KLF1_GSE43625 <- read.csv('./GSE43625_hg19/assigned_peaks/KLF1.csv')
+NFE2_GSE43625 <- read.csv('./GSE43625_hg19/assigned_peaks/NFE2.csv')
+TAL1_GSE43625 <- read.csv('./GSE43625_hg19/assigned_peaks/TAL1.csv')
+
+#KLF1 and GATA1
+venn.diagram(x = list(unique(GATA1_GSE43625$SYMBOL), KLF1_GSE43625$SYMBOL), category.names = c("GATA1", "KLF1"), filename = './GSE43625_hg19/TF_comparison/GATA1_KLF1.png',
+             output=TRUE, imagetype="png")
+
+#NFE2 and GATA1
+venn.diagram(x = list(unique(GATA1_GSE43625$SYMBOL), NFE2_GSE43625$SYMBOL), category.names = c("GATA1", "NFE2"), filename = './GSE43625_hg19/TF_comparison/GATA1_NFE2.png',
+             output=TRUE, imagetype="png")
+#TAL1 and GATA1
+venn.diagram(x = list(unique(GATA1_GSE43625$SYMBOL), TAL1_GSE43625$SYMBOL), category.names = c("GATA1", "TAL1"), filename = './GSE43625_hg19/TF_comparison/GATA1_TAL1.png',
+             output=TRUE, imagetype="png")
