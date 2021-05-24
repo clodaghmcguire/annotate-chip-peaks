@@ -2,8 +2,8 @@ library(trackViewer)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db)
 library(karyoploteR)
-adult_RP_genes <- read.csv("./GSE36994_hg19/assigned_peaks/RPgenePeaks_GSM970258_A_hg19.csv")
-fetal_RP_genes <- read.csv("/GSE36994_hg19/assigned_peaks/RPgenePeaks_GSM970257_F_hg19.csv")
+adult_RP_genes <- read.csv("./GSE36994_hg19/assigned_peaks/RPgenePeaks_GSM970258_A_hg19_chipseeker.csv")
+fetal_RP_genes <- read.csv("./GSE36994_hg19/assigned_peaks/RPgenePeaks_GSM970257_F_hg19_chipseeker.csv")
 gene_list = read.delim("hglft_genome_hg19.bed")
 
 
@@ -19,7 +19,8 @@ for (row in 1:nrow(gene_list)) {
   
   if(gene_name %in% adult_RP_genes$SYMBOL||gene_name %in% fetal_RP_genes$SYMBOL){
     filename <- paste("./trackerViewer/",gene_name,".png", sep ="")
-    png(file=filename)
+    png(file=filename, width = 720, height = 480,
+        units = "px")
     
     gr <- GRanges(chr, IRanges(start_pos, end_pos))
     ids <- getGeneIDsFromTxDb(gr, TxDb.Hsapiens.UCSC.hg19.knownGene)
@@ -50,11 +51,10 @@ for (row in 1:nrow(gene_list)) {
   chr <- gene_list[row, "X.chr"]
   start_pos <- gene_list[row, "start"] - 10000
   end_pos <- gene_list[row, "end"] + 10000
-  print(chr)
-  print(gene_name)
 
-    filename <- paste("./karyploteR/",gene_name,".png", sep ="")
-    png(file=filename)
+    filename <- paste("./karyoploteR/",gene_name,".png", sep ="")
+    png(file=filename, width = 720, height = 480,
+        units = "px")
 
     gene.region <- GRanges(seqnames=chr, ranges=IRanges(start_pos, end_pos))
     kp <- plotKaryotype(zoom = gene.region)
@@ -113,7 +113,7 @@ for (row in 1:nrow(gene_list)) {
   
   filename <- paste("./histone_marks/",gene_name,".png", sep ="")
   png(file=filename, width = 1000, height = 600,
-      units = "px", pointsize = 12, bg = "white", res = NA)
+      units = "px")
   
   gene.region <- GRanges(chr, IRanges(start_pos, end_pos))
   kp <- plotKaryotype(zoom = gene.region)
@@ -131,8 +131,8 @@ for (row in 1:nrow(gene_list)) {
   kpAddBaseNumbers(kp, tick.dist = 10000, minor.tick.dist = 2000,
                    add.units = TRUE, cex=1.3, digits = 6)
   
-  total.tracks <- 8
-  out.at <- autotrack(1:8, 8, margin = 0.3, r0=0.23)
+  total.tracks <- 9
+  out.at <- autotrack(1:9, 9, margin = 0.3, r0=0.23)
   
   histone.marks <- c(GATA1="./GSE36994_hg19/GSM970258_GATA1-A_hg19.bw",
                      TAL1="./GSE36994_hg19/GSM908055_TAL1-A_hg19.bw",
@@ -170,4 +170,51 @@ for (row in 1:nrow(gene_list)) {
   
 }
 
+### visualise peaks for macs3 re-analysis using karyoploteR ###
+pp <- getDefaultPlotParams(plot.type=1)
+pp$leftmargin <- 0.15
+pp$topmargin <- 15
+pp$bottommargin <- 15
+pp$ideogramheight <- 5
+pp$data1inmargin <- 10
 
+for (row in 1:nrow(gene_list)) { 
+  gene_name <- gene_list[row, "name"]
+  chr <- gene_list[row, "X.chr"]
+  start_pos <- gene_list[row, "start"] - 10000
+  end_pos <- gene_list[row, "end"] + 10000
+  
+  filename <- paste("./GSE36994_hg19_macs3/karyploteR/",gene_name,".png", sep ="")
+  png(file=filename, width = 720, height = 480,
+      units = "px")
+  
+  gene.region <- GRanges(seqnames=chr, ranges=IRanges(start_pos, end_pos))
+  kp <- plotKaryotype(zoom = gene.region)
+  
+  genes.data <- makeGenesDataFromTxDb(TxDb.Hsapiens.UCSC.hg19.knownGene,
+                                      karyoplot=kp,
+                                      plot.transcripts = TRUE, 
+                                      plot.transcripts.structure = TRUE)
+  
+  kp <- plotKaryotype(zoom = gene.region)
+  kpPlotGenes(kp, data=genes.data)
+  genes.data <- addGeneNames(genes.data)
+  genes.data <- mergeTranscripts(genes.data)
+  
+  kp <- plotKaryotype(zoom = gene.region, cex=1.2, plot.params = pp)
+  kpPlotGenes(kp, data=genes.data, r0=0, r1=0.15, gene.name.cex = 1.2)
+  kpAddBaseNumbers(kp, tick.dist = 10000, minor.tick.dist = 2000,
+                   add.units = TRUE, cex=1.3, digits = 6)
+  
+  total.tracks <- 2
+  out.at <- autotrack(1:2, 2, margin = 0.3, r0=0.23)
+  
+  Adult.bw <- "./GSE36994_hg19_macs3/GSE36994_GATA1.bigwig"
+  at <- autotrack(1, 2, r0=0.23, r1=1, margin = 0.1)
+  kp <- kpPlotBigWig(kp, data=Adult.bw, ymax="visible.region", r0=0.35, r1=0.65, col = "cadetblue2")
+  computed.ymax <- kp$latest.plot$computed.values$ymax
+  kpAxis(kp, ymin=0, ymax=computed.ymax, r0=0.35, r1=0.65)
+  kpAddLabels(kp, labels = "GATA1", r0=0.2, r1=0.65, cex=1.2, label.margin = 0.015)
+  dev.off()
+  
+}
