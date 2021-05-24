@@ -93,17 +93,17 @@ dev.off()
 files <- list(Adult = './GSE36994_hg19/GSM970258_GATA1-A_hg19.bed', Fetal = './GSE36994_hg19/GSM970257_GATA1-F_hg19.bed')
 tagMatrixList <- lapply(files, getTagMatrix, windows=promoter)
 plotAvgProf(tagMatrixList, xlim=c(-3000, 3000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
-dev.copy(png,'./GSE36994_hg19/graphs/avgprof.png')
+dev.copy(png,'./GSE36994_hg19/graphs/avgprof_GATA1.png')
 dev.off()
 PlotAvgProf(tagMatrixList, xlim=c(-3000, 3000), conf=0.95, resample=500, facet="row")
-dev.copy(png,'./GSE36994_hg19/graphs/avgprof_conf.png')
+dev.copy(png,'./GSE36994_hg19/graphs/avgprof_conf_GATA1.png')
 dev.off()
 peakAnnoList <- lapply(files, annotatePeak, TxDb=txdb, tssRegion=c(-3000, 3000), verbose=FALSE)
 plotAnnoBar(peakAnnoList)
-dev.copy(png,'./GSE36994_hg19/graphs/annobar.png', width=480, height=240)
+dev.copy(png,'./GSE36994_hg19/graphs/annobar_GATA1.png', width=480, height=240)
 dev.off()
 plotDistToTss(peakAnnoList)
-dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS.png', width=480, height=240)
+dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS_GATA1.png', width=480, height=240)
 dev.off()
 
 ############################
@@ -143,8 +143,8 @@ dev.off()
 ## datasets can be downloaded from GSE36994
 ## datasets are in hg18 but were converted to hg19 or hg38 using UCSC liftover
 ## annotate peaks
-peakAnno_TAL1_A <- annotatePeak('./GSE36994_hg19/GSM908055_TAL1-A_hg19.bed', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
-peakAnno_TAL1_F <- annotatePeak('./GSE36994_hg19/GSM908054_TAL1-F_hg19.bed', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db")
+peakAnno_TAL1_A <- annotatePeak('./GSE36994_hg19/GSM908055_TAL1-A_hg19.bed', tssRegion=c(-3000, 3000), TxDb=txdb, annoDb="org.Hs.eg.db")
+peakAnno_TAL1_F <- annotatePeak('./GSE36994_hg19/GSM908054_TAL1-F_hg19.bed', tssRegion=c(-3000, 3000), TxDb=txdb, annoDb="org.Hs.eg.db")
 ## get list of assigned peaks
 all_peaks_TAL1_A <- as.GRanges(peakAnno_TAL1_A) #use GRanges rather than data.frame so that after filtering you can use covplot
 head(all_peaks_TAL1_A)
@@ -155,9 +155,9 @@ head(all_peaks_TAL1_F)
 filtered_peaks_TAL1_A <- all_peaks_TAL1_A[all_peaks_TAL1_A$geneId %in% genes$gene_id, ]
 head(filtered_peaks_TAL1_A)
 filtered_peaks_TAL1_F <- all_peaks_TAL1_F[all_peaks_TAL1_F$geneId %in% genes$gene_id, ]
-filename <- file.path(getwd(), "./GSE36994_hg19/RPgenePeaks_TAL1_A_hg19.csv")
+filename <- file.path(getwd(), "./GSE36994_hg19/assigned_peaks/RPgenePeaks_TAL1_A_hg19.csv")
 write.csv(x=filtered_peaks_TAL1_A, file=filename, row.names = FALSE)
-filename <- file.path(getwd(), "./GSE36994_hg19/RPgenePeaks_TAL1_F_hg19.csv")
+filename <- file.path(getwd(), "./GSE36994_hg19/assigned_peaks/RPgenePeaks_TAL1_F_hg19.csv")
 write.csv(x=filtered_peaks_TAL1_F, file=filename, row.names = FALSE)
 
 TAL1_A_peak <- readPeakFile('./GSE36995_hg19/TAL1-A_hg19.bed')
@@ -167,7 +167,7 @@ covplot(TAL1_A_peak)
 dev.copy(png,'./GSE36994_hg19/graphs/peak_coverage_TAL1_A.png')
 dev.off()
 covplot(filtered_peaks_TAL1_A)
-dev.copy(png,'./GSE36994_hg19/peak_coverage_TAL1_A_RPgenes.png')
+dev.copy(png,'./GSE36994_hg19/graphs/peak_coverage_TAL1_A_RPgenes.png')
 dev.off()
 covplot(TAL1_F_peak, weightCol = 'V5')
 dev.copy(png,'./GSE36994_hg19/graphs/peak_coverage_TAL1_F.png')
@@ -223,32 +223,32 @@ dev.off()
 ##########################################################################
 ##### Peak assignment for GSE43625 KLF1 #####
 ##########################################################################
-files <- list(GATA1 = './GSE43625/GSM1067274_Erythroid_GATA1_peaks_hg19.bed.gz', 
-              TAL1 = './GSE43625/GSM1067277_Erythroid_TAL1_peaks_hg19.bed.gz',
-              KLF1 = './GSE43625/GSM1067275_Erythroid_KLF1_peaks_hg19.bed.gz',
-              NFE2 = './GSE43625/GSM1067276_Erythroid_NFE2_peaks_hg19.bed.gz'
+files <- list(GATA1 = './GSE43625_hg19/GSM1067274_Erythroid_GATA1_peaks_hg19.bed.gz', 
+              TAL1 = './GSE43625_hg19/GSM1067277_Erythroid_TAL1_peaks_hg19.bed.gz',
+              KLF1 = './GSE43625_hg19/GSM1067275_Erythroid_KLF1_peaks_hg19.bed.gz',
+              NFE2 = './GSE43625_hg19/GSM1067276_Erythroid_NFE2_peaks_hg19.bed.gz'
 )
 
 promoter <- getPromoters(TxDb=txdb, upstream=3000, downstream=3000)
 
-tagMatrixList <- lapply(files, getTagMatrix, windows=promoter)
-plotAvgProf(tagMatrixList, xlim=c(-3000, 3000))
+tagMatrixList_files <- lapply(files, getTagMatrix, windows=promoter)
+plotAvgProf(tagMatrixList_files, xlim=c(-3000, 3000))
 dev.copy(png,'./GSE43625_hg19/graphs/avgprof.png', width=600, height=300)
 dev.off()
-plotAvgProf(tagMatrixList, xlim=c(-3000, 3000), facet="row")
+plotAvgProf(tagMatrixList_files, xlim=c(-3000, 3000), facet="row")
 dev.copy(png,'./GSE43625_hg19/graphs/avgprof_row.png', width=600, height=300)
 dev.off()
 
-peakAnnoList <- lapply(files, annotatePeak, TxDb=txdb, annoDb="org.Hs.eg.db",
+peakAnnoList_files <- lapply(files, annotatePeak, TxDb=txdb, annoDb="org.Hs.eg.db",
                        tssRegion=c(-3000, 3000), verbose=FALSE)
-plotAnnoBar(peakAnnoList)
+plotAnnoBar(peakAnnoList_files)
 dev.copy(png,'./GSE43625_hg19/graphs/annobar.png', width=600, height=300)
 dev.off()
-plotDistToTSS(peakAnnoList)
+plotDistToTSS(peakAnnoList_files)
 dev.copy(png,'./GSE43625_hg19/graphs/DistToTss.png', width=600, height=300)
 dev.off()
 
-rp_gene_peaks <- lapply(peakAnnoList, function(i) as.data.frame(i)[as.data.frame(i)$geneId %in% genes$gene_id, ])
+rp_gene_peaks <- lapply(peakAnnoList_files, function(i) as.data.frame(i)[as.data.frame(i)$geneId %in% genes$gene_id, ])
 sapply(names(rp_gene_peaks), function (x) write.csv(rp_gene_peaks[[x]], file=paste(paste("./GSE43625_hg19/assigned_peaks/", x), "csv", sep="."), row.names = FALSE )   )
 sapply(names(rp_gene_peaks), function (x) write.table(rp_gene_peaks[[x]], file=paste(paste("./GSE43625_hg19/assigned_peaks/", x), "bed", sep="."), sep = "\t", row.names = FALSE )   )
 
@@ -277,13 +277,13 @@ filename <- file.path(getwd(), "./ENCODE/assigned_peaks/RPgenePeaks_ENCODE_F_hg1
 write.csv(x=filtered_peaks_ENCODE_fetal, file=filename, row.names = FALSE)
 
 ENCODE_peak_adult <- readPeakFile('./ENCODE/ENCFF957CWW.bed.gz')
-ENCODE_peak_adult <- readPeakFile('./ENCODE/ENCFF762DRA.bed.gz')
+ENCODE_peak_fetal <- readPeakFile('./ENCODE/ENCFF762DRA.bed.gz')
 
 covplot(ENCODE_peak_adult, weightCol = 'V5')
 dev.copy(png,'./ENCODE/graphs/peak_coverage_ENCODE_A.png')
 dev.off()
 covplot(filtered_peaks_ENCODE_adult, weightCol = 'V5')
-dev.copy(png,'peak_coverage_ENCODE_RPgenes_A.png')
+dev.copy(png,'./ENCODE/graphs/peak_coverage_ENCODE_RPgenes_A.png')
 dev.off()
 
 covplot(ENCODE_peak_fetal, weightCol = 'V5')
@@ -315,18 +315,18 @@ dev.off()
 
 #TF binding
 plotAnnoBar(peakAnno_ENCODE_adult)
-dev.copy(png,'annobar_ENCODE_A.png', width=480, height=240)
+dev.copy(png,'./ENCODE/graphs/annobar_ENCODE_A.png', width=480, height=240)
 dev.off()
 plotAnnoBar(peakAnno_ENCODE_fetal)
-dev.copy(png,'annobar_ENCODE_F.png', width=480, height=240)
+dev.copy(png,'./ENCODE/graphs/annobar_ENCODE_F.png', width=480, height=240)
 dev.off()
 
 #distribution of TF binding relative to TSS
 plotDistToTSS(peakAnno_ENCODE_adult, title = "Distribution of TF binding relative to TSS in adult cells")
-dev.copy(png,'DistToTSS_ENCODE_A.png', width=480, height=240)
+dev.copy(png,'./ENCODE/graphs/DistToTSS_ENCODE_A.png', width=480, height=240)
 dev.off()
 plotDistToTSS(peakAnno_ENCODE_fetal, title = "Distribution of TF binding relative to TSS in adult cells")
-dev.copy(png,'DistToTSS_ENCODE_F.png', width=480, height=240)
+dev.copy(png,'./ENCODE/graphs/DistToTSS_ENCODE_F.png', width=480, height=240)
 dev.off()
 
 
@@ -339,7 +339,7 @@ txdb <- TxDb.Mmusculus.UCSC.mm9.knownGene
 mouse_genes = read.delim("./mouse/mouse_RPgenes.tsv")
 
 #replicate 1
-peakAnno_rep1 <- annotatePeak('./mouse/mouse_replicate1.bed', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb = "org.Mm.eg.db")
+peakAnno_rep1 <- annotatePeak('./mouse/mouse_replicate1.bed', tssRegion=c(-3000, 3000), TxDb=txdb, annoDb = "org.Mm.eg.db")
 all_peaks_mouse1 <- as.GRanges(peakAnno_rep1) #use GRanges rather than data.frame so that after filtering you can use covplot
 filtered_peaks_mouse1 <- all_peaks_mouse1[all_peaks_mouse1$geneId %in% mouse_genes$Gene.ID, ]
 head(filtered_peaks_mouse1)
@@ -348,7 +348,7 @@ filename <- file.path(getwd(), "./mouse/assigned_peaks/RPgenePeaks_mouse_rep1.cs
 write.csv(x=filtered_peaks_mouse1, file=filename, row.names = FALSE)
 
 #replicate 2
-peakAnno_rep2 <- annotatePeak('./mouse/mouse_replicate2.bed', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb = "org.Mm.eg.db")
+peakAnno_rep2 <- annotatePeak('./mouse/mouse_replicate2.bed', tssRegion=c(-3000, 3000), TxDb=txdb, annoDb = "org.Mm.eg.db")
 all_peaks_mouse2 <- as.GRanges(peakAnno_rep2) #use GRanges rather than data.frame so that after filtering you can use covplot
 filtered_peaks_mouse2 <- all_peaks_mouse2[all_peaks_mouse2$geneId %in% mouse_genes$Gene.ID, ]
 head(filtered_peaks_mouse2)
@@ -394,21 +394,21 @@ covplot(filtered_peaks_mouse2, weightCol = 'V5')
 dev.copy(png,'./mouse/graphs/peak_coverage_mouse2_RPgenes.png')
 dev.off()
 
-promoter <- getPromoters(TxDb=txdb, upstream=10000, downstream=10000)
+promoter <- getPromoters(TxDb=txdb, upstream=3000, downstream=3000)
 tagMatrix_replicate1 <- getTagMatrix(replicate1_peak, windows=promoter)
 tagMatrix_replicate2 <- getTagMatrix(replicate2_peak, windows=promoter)
-#tagHeatmap(tagMatrix_replicate1, xlim=c(-10000, 10000), color="red")
+#tagHeatmap(tagMatrix_replicate1, xlim=c(-3000, 3000), color="red")
 #dev.copy(png,'./mouse/graphs/heatmap_mouse1.png')
 #dev.off()
-#tagHeatmap(tagMatrix_replicate2, xlim=c(-10000, 10000), color="red")
+#tagHeatmap(tagMatrix_replicate2, xlim=c(-3000, 3000), color="red")
 #dev.copy(png,'./mouse/graphs/heatmap_mouse2.png')
 #dev.off()
 
 ## get binding profile
-plotAvgProf(tagMatrix_replicate1, xlim=c(-10000, 10000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
+plotAvgProf(tagMatrix_replicate1, xlim=c(-3000, 3000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
 dev.copy(png,'./mouse/graphs/avgprof_mouse1.png')
 dev.off()
-plotAvgProf(tagMatrix_replicate2, xlim=c(-10000, 10000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
+plotAvgProf(tagMatrix_replicate2, xlim=c(-3000, 3000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
 dev.copy(png,'./mouse/graphs/avgprof_mouse2.png')
 dev.off()
 
