@@ -17,26 +17,19 @@ genes = read.delim("ribsome_geneset.txt")
 ## datasets can be downloaded from GSE36994
 ## original FASTQ aligned to hg19 and peaks called using macs3
 ## annotate peaks
-peakAnno_GATA1 <- annotatePeak('./GSE36994_hg19_macs3/macs3_q1e-2_adult/GATA1_macs3_peaks_enrichment5.bed', tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db", addFlankGeneInfo = TRUE, flankDistance = 5000)
-#peakAnno_GATA1_edb <- annotatePeak('./GSE36994_hg19_macs3/macs3_q1e-2_adult/GATA1_macs3_peaks_enrichment5.bed', tssRegion=c(-10000, 10000), TxDb=edb, annoDb="org.Hs.eg.db", addFlankGeneInfo = TRUE, flankDistance = 5000)
+peakAnno_GATA1 <- annotatePeak('./GSE36994_hg19_macs3/macs3_q1e-2_adult/GATA1_macs3_peaks_enrichment5.bed', 
+                               tssRegion=c(-10000, 10000), TxDb=txdb, annoDb="org.Hs.eg.db", 
+                               addFlankGeneInfo = TRUE, flankDistance = 5000)
 
 ## get list of assigned peaks
 all_peaks_GATA1 <- as.GRanges(peakAnno_GATA1) #use GRanges rather than data.frame so that after filtering you can use covplot
 head(all_peaks_GATA1)
-#all_peaks_GATA1_edb <- as.GRanges(peakAnno_GATA1_edb)
 
 ## filter annoPeaks to just ribosomal protein genes
 filtered_peaks_GATA1 <- all_peaks_GATA1[all_peaks_GATA1$geneId %in% genes$gene_id, ]
 head(filtered_peaks_GATA1)
 filename <- file.path(getwd(), "./GSE36994_hg19_macs3/assigned_peaks/GATA1_chipseeker_flank_info_txdb.csv")
 write.csv(x=filtered_peaks_GATA1, file=filename, row.names = FALSE)
-#filtered_peaks_GATA1_edb <- all_peaks_GATA1_edb[all_peaks_GATA1_edb$ENTREZID %in% genes$gene_id, ]
-#filename <- file.path(getwd(), "./GSE36994_hg19_macs3/assigned_peaks/GATA1_chipseeker_flank_info_edb.csv")
-#write.csv(x=filtered_peaks_GATA1, file=filename, row.names = FALSE)
-
-#vennplot(list(txdb = unique(filtered_peaks_GATA1$SYMBOL), edb = unique(filtered_peaks_GATA1_edb$SYMBOL)))
-#dev.copy(png,'./GSE36994_hg19_macs3/graphs/annodb_comparison.png')
-#dev.off()
 
 ## filter annoPeaks to get peaks where RP gene is a flanking gene
 flank_df <- all_peaks_GATA1 %>%
@@ -89,8 +82,10 @@ dev.off()
 
 #### adult fetal comparison ####
 ## annotate peaks
-peakAnno_GSM970258_A <- annotatePeak('./GSE36994_hg19_macs3/macs3_q1e-2_adult/GATA1_macs3_peaks_enrichment5.bed', tssRegion=c(-3000, 3000), TxDb=txdb, annoDb="org.Hs.eg.db")
-peakAnno_GSM970257_F <- annotatePeak('./GSE36994_hg19_macs3/macs3_q1e-2_fetal/GATA1_macs3_enrichment5.bed', tssRegion=c(-3000, 3000), TxDb=txdb, annoDb="org.Hs.eg.db")
+peakAnno_GSM970258_A <- annotatePeak('./GSE36994_hg19_macs3/macs3_q1e-2_adult/GATA1_macs3_peaks_enrichment5.bed', 
+                                     tssRegion=c(-3000, 3000), TxDb=txdb, annoDb="org.Hs.eg.db")
+peakAnno_GSM970257_F <- annotatePeak('./GSE36994_hg19_macs3/macs3_q1e-2_fetal/GATA1_macs3_enrichment5.bed', 
+                                     tssRegion=c(-3000, 3000), TxDb=txdb, annoDb="org.Hs.eg.db")
 ## get list of assigned peaks
 all_peaks_GSM970258_A <- as.GRanges(peakAnno_GSM970258_A) #use GRanges rather than data.frame so that after filtering you can use covplot
 head(all_peaks_GSM970258_A)
@@ -162,7 +157,9 @@ dev.copy(png,'./GSE36994_hg19_macs3/graphs/DistToTSS_GSM970257_F.png', width=480
 dev.off()
 
 ##comparison of adult vs fetal GATA1
-GATA1_files <- list(Adult = './GSE36994_hg19_macs3/macs3_q1e-2_adult/GATA1_macs3_peaks_enrichment5.bed', Fetal = './GSE36994_hg19_macs3/macs3_q1e-2_fetal/GATA1_macs3_enrichment5.bed')
+GATA1_files <- list(Adult = './GSE36994_hg19_macs3/macs3_q1e-2_adult/GATA1_macs3_peaks_enrichment5.bed', 
+                    Fetal = './GSE36994_hg19_macs3/macs3_q1e-2_fetal/GATA1_macs3_enrichment5.bed')
+
 tagMatrixList_GATA1 <- lapply(GATA1_files, getTagMatrix, windows=promoter)
 plotAvgProf(tagMatrixList_GATA1, xlim=c(-3000, 3000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
 dev.copy(png,'./GSE36994_hg19_macs3/graphs/avgprof_GATA1.png')
@@ -174,7 +171,7 @@ peakAnnoList_GATA1 <- lapply(GATA1_files, annotatePeak, TxDb=txdb, tssRegion=c(-
 plotAnnoBar(peakAnnoList_GATA1)
 dev.copy(png,'./GSE36994_hg19_macs3/graphs/annobar_GATA1.png', width=480, height=240)
 dev.off()
-plotDistToTss(peakAnnoList_GATA1)
+plotDistToTSS(peakAnnoList_GATA1)
 dev.copy(png,'./GSE36994_hg19_macs3/graphs/DistToTSS_GATA1.png', width=480, height=240)
 dev.off()
 
@@ -191,18 +188,23 @@ dev.off()
 #comparison of adult vs fetal for PolII
 PolII_files <- list(PolII_adult = './GSE36994_hg19_macs3/macs3_PolII_adult/PolII_macs3_peaks.narrowPeak', 
                     PolII_fetal = './GSE36994_hg19_macs3/macs3_PolII_fetal/PolII_macs3_peaks.narrowPeak')
+
 tagMatrixList_PolII <- lapply(PolII_files, getTagMatrix, windows=promoter)
+
 plotAvgProf(tagMatrixList_PolII, xlim=c(-3000, 3000), xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
 dev.copy(png,'./GSE36994_hg19_macs3/graphs/avgprof_PolII.png')
 dev.off()
 PlotAvgProf(tagMatrixList_PolII, xlim=c(-3000, 3000), conf=0.95, resample=500, facet="row")
 dev.copy(png,'./GSE36994_hg19_macs3/graphs/avgprof_conf_PolII.png')
 dev.off()
-peakAnnoList_PolII <- lapply(PolII_files, annotatePeak, TxDb=edb, annoDb="org.Hs.eg.db", tssRegion=c(-1000, 1000), verbose=FALSE)
+
+peakAnnoList_PolII <- lapply(PolII_files, annotatePeak, TxDb=edb, annoDb="org.Hs.eg.db", 
+                             tssRegion=c(-1000, 1000), verbose=FALSE)
+
 plotAnnoBar(peakAnnoList_PolII)
 dev.copy(png,'./GSE36994_hg19_macs3/graphs/annobar_PolII.png', width=480, height=240)
 dev.off()
-plotDistToTss(peakAnnoList_PolII)
+plotDistToTSS(peakAnnoList_PolII)
 dev.copy(png,'./GSE36994_hg19_macs3/graphs/DistToTSS_PolII.png', width=480, height=240)
 dev.off()
 
@@ -214,6 +216,12 @@ dev.off()
 PolII_df <- lapply(peakAnnoList_PolII, function(i) as.data.frame(i)[as.data.frame(i)$ENTREZID %in% genes$gene_id, ])
 sapply(names(PolII_df), function (x) write.csv(PolII_df[[x]], file=paste(paste("./GSE36994_hg19_macs/assigned_peaks/", x), "csv", sep="."), row.names = FALSE )   )
 
+plotDistToTSS(list(GATA1 = peakAnno_GSM970258_A, Pol_II = peakAnnoList_PolII$Adult))
+dev.copy(png,'./GSE36994_hg19_macs3/graphs/DistToTSS_PolII_GATA1_adult.png', width=480, height=240)
+dev.off()
+plotDistToTSS(list(GATA1 = peakAnno_GSM970257_F, Pol_II = peakAnnoList_PolII$Fetal))
+dev.copy(png,'./GSE36994_hg19_macs3/graphs/DistToTSS_PolII_GATA1_fetal.png', width=480, height=240)
+dev.off()
 ### tool comparison ###
 #chipenrich
 data('locusdef.hg19.nearest_tss', package = 'chipenrich.data')
@@ -278,10 +286,15 @@ pie1(fetal_aCR$percentage)
 dev.copy(png,'./GSE36994_hg19_macs3/graphs/fetal_chipanno_annopie_GATA1.png')
 dev.off()
 
-venn.diagram(x = list(unique(filtered_peaks_GSM970258_A$geneId), unique(adult_RP_peaks$gene_id), unique(adult_annotatedPeak_filtered$feature)), category.names = c("Chipseeker", "Chipenrich", "ChipPeakAnno"), filename = './GSE36994_hg19_macs3/tool_comparison/adult_tool_comparison.png',
+venn.diagram(x = list(unique(filtered_peaks_GSM970258_A$geneId), unique(adult_RP_peaks$gene_id), 
+                      unique(adult_annotatedPeak_filtered$feature)), category.names = c("Chipseeker", "Chipenrich", "ChipPeakAnno"), 
+             filename = './GSE36994_hg19_macs3/tool_comparison/adult_tool_comparison.png',
              output=TRUE, imagetype="png")
 
-venn.diagram(x = list(unique(filtered_peaks_GSM970257_F$geneId), unique(fetal_RP_peaks$gene_id), unique(fetal_annotatedPeak_filtered$feature)), category.names = c("Chipseeker", "Chipenrich", "ChipPeakAnno"), filename = './GSE36994_hg19_macs3/tool_comparison/fetal_tool_comparison.png',
+venn.diagram(x = list(unique(filtered_peaks_GSM970257_F$geneId), unique(fetal_RP_peaks$gene_id), 
+                      unique(fetal_annotatedPeak_filtered$feature)), category.names = 
+               c("Chipseeker", "Chipenrich", "ChipPeakAnno"), 
+             filename = './GSE36994_hg19_macs3/tool_comparison/fetal_tool_comparison.png',
              output=TRUE, imagetype="png")
 
 
@@ -318,6 +331,10 @@ sapply(names(GSE43625_rp_genes), function (x) write.csv(GSE43625_rp_genes[[x]], 
 GSE43625_rp_genes_unique <- lapply(GSE43625_rp_genes, function(i) unique(as.data.frame(i)$geneId))
 vennplot(GSE43625_rp_genes_unique)
 dev.copy(png,'./GSE43625_hg19/graphs/gene_overlap.png')
+dev.off()
+
+vennplot(list(GATA1 = GSE43625_rp_genes_unique$GATA1, KLF1 = GSE43625_rp_genes_unique$KLF1))
+dev.copy(png,'./GSE43625_hg19/graphs/GATA1_KLF1_overlap.png')
 dev.off()
 
 #ENCODE
@@ -392,7 +409,9 @@ dev.off()
 
 #### comparison of all datasets: ENCODE, GSE36994 and GSE43625 ####
 
-venn.diagram(x = list(unique(filtered_peaks_GSM970258_A$SYMBOL), unique(filtered_peaks_ENCODE_adult$SYMBOL), unique(rp_gene_peaks$GATA1$SYMBOL)), category.names = c("GSE36994", "ENCODE", "GSE43625"), filename = './GSE36994_hg19_macs3/dataset_comparison/three_datasets_overlap.png',
+venn.diagram(x = list(unique(filtered_peaks_GSM970258_A$SYMBOL), unique(filtered_peaks_ENCODE_adult$SYMBOL), 
+                      unique(rp_gene_peaks$GATA1$SYMBOL)), category.names = 
+               c("GSE36994", "ENCODE", "GSE43625"), filename = './GSE36994_hg19_macs3/dataset_comparison/three_datasets_overlap.png',
              output=TRUE, imagetype="png"
 )
 
@@ -402,11 +421,15 @@ unique(rp_gene_peaks$GATA1$SYMBOL)
 
 # compare Chipseeker to selecting all peaks within 10kb window
 window <- read.delim('./GSE36994_hg19_macs3/adult_windowed.bed', header = FALSE)
-venn.diagram(x = list(unique(filtered_peaks_GSM970258_A$SYMBOL), unique(window$V4)), category.names = c("Chipseeker", "10kb window"), filename = './GSE36994_hg19_macs3/tool_comparison/adult_10kbWindow_comparison.png',
+venn.diagram(x = list(unique(filtered_peaks_GSM970258_A$SYMBOL), unique(window$V4)), 
+             category.names = c("Chipseeker", "10kb window"), 
+             filename = './GSE36994_hg19_macs3/tool_comparison/adult_10kbWindow_comparison.png',
              output=TRUE, imagetype="png", height = 3000, width = 3000, ext.text = FALSE)
 
 window_fetal <- read.delim('./GSE36994_hg19_macs3/fetal_windowed.bed', header = FALSE)
-venn.diagram(x = list(unique(filtered_peaks_GSM970257_F$SYMBOL), unique(window_fetal$V4)), category.names = c("Chipseeker", "10kb window"), filename = './GSE36994_hg19_macs3/tool_comparison/fetal_10kbWindow_comparison.png',
+venn.diagram(x = list(unique(filtered_peaks_GSM970257_F$SYMBOL), unique(window_fetal$V4)), 
+             category.names = c("Chipseeker", "10kb window"), 
+             filename = './GSE36994_hg19_macs3/tool_comparison/fetal_10kbWindow_comparison.png',
              output=TRUE, imagetype="png", height = 3000, width = 3000, ext.text = FALSE)
 
 
@@ -424,19 +447,39 @@ promoter <- getPromoters(TxDb=txdb, upstream=3000, downstream=3000)
 
 tagMatrixList_adult_histones <- lapply(adult_histones, getTagMatrix, windows=promoter)
 plotAvgProf(tagMatrixList_adult_histones, xlim=c(-3000, 3000))
+dev.copy(png,'./GSE36994_hg19/graphs/AvgProf_histones_adult.png')
+dev.off()
+
 plotAvgProf(tagMatrixList_adult_histones, xlim=c(-3000, 3000), facet="row")
+dev.copy(png,'./GSE36994_hg19/graphs/AvgProf_row_histones_adult.png')
+dev.off()
+
 par(mar=c(1,1,1,1))
 #tagHeatmap(tagMatrixList_adult_histones, xlim=c(-3000, 3000), color=NULL)
 peakAnnoList_adult_histones <- lapply(adult_histones, annotatePeak, TxDb=txdb, annoDb="org.Hs.eg.db",
                        tssRegion=c(-3000, 3000), verbose=FALSE)
 plotAnnoBar(peakAnnoList_adult_histones)
-plotDistToTSS(peakAnnoList_adult_histones)
+dev.copy(png,'./GSE36994_hg19/graphs/AnnoBar_histones_adult.png')
+dev.off()
+
+plotDistToTSS(list(H3K4me3 = peakAnnoList_adult_histones$H3K4me3_adult, H3K27ac = peakAnnoList_adult_histones$H3K27ac_adult, 
+                   H3K4me1 = peakAnnoList_adult_histones$H3K4me1_adult, H3K36me3 = peakAnnoList_adult_histones$H3K36me3_adult,
+                   H3K27me3 = peakAnnoList_adult_histones$H3K27me3_adult, H3K9me3 = peakAnnoList_adult_histones$H3K9me3_adult))
+dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS_histones_adult.png')
+dev.off()
+
+plotDistToTSS(peakAnnoList_adult_histones$TAL1_adult)
+dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS_TAL1_adult.png', width=480, height=240)
+dev.off()
 
 #all_genes <- lapply(peakAnnoList_adult_histones, function(i) as.data.frame(i)$geneId)
 adult_rp_gene_peaks <- lapply(peakAnnoList_adult_histones, function(i) as.data.frame(i)[as.data.frame(i)$geneId %in% genes$gene_id, ])
 sapply(names(adult_rp_gene_peaks), function (x) write.csv(adult_rp_gene_peaks[[x]], file=paste(paste("./GSE36994_hg19/assigned_peaks/histones/", x), "csv", sep="."), row.names = FALSE )   )
 rp_genes <- lapply(peakAnnoList_adult_histones, function(i) as.data.frame(i)$geneId[as.data.frame(i)$geneId %in% genes$gene_id])
 
+vennplot(list(GATA1 = unique(filtered_peaks_GSM970258_A$SYMBOL), TAL1 = unique(adult_rp_gene_peaks$TAL1_adult$SYMBOL)))
+dev.copy(png,'./GSE36994_hg19/graphs/TAL1_GATA1_overlap_adult.png')
+dev.off()
 
 fetal_histones <- list( 
   TAL1_fetal = './GSE36994_hg19/GSM908054_TAL1-F_hg19.bed',
@@ -449,34 +492,69 @@ fetal_histones <- list(
 
 tagMatrixList_fetal_histones <- lapply(fetal_histones, getTagMatrix, windows=promoter)
 plotAvgProf(tagMatrixList_fetal_histones, xlim=c(-3000, 3000))
+dev.copy(png,'./GSE36994_hg19/graphs/AvgProf_histones_fetal.png')
+dev.off()
+
 plotAvgProf(tagMatrixList_fetal_histones, xlim=c(-3000, 3000), facet="row")
-par(mar=c(1,1,1,1))
+dev.copy(png,'./GSE36994_hg19/graphs/AvgProf_row_histones_fetal.png')
+dev.off()
+#par(mar=c(1,1,1,1))
 #tagHeatmap(tagMatrixList_adult_histones, xlim=c(-3000, 3000), color=NULL)
 peakAnnoList_fetal_histones <- lapply(fetal_histones, annotatePeak, TxDb=txdb, annoDb="org.Hs.eg.db",
                                       tssRegion=c(-3000, 3000), verbose=FALSE)
 plotAnnoBar(peakAnnoList_fetal_histones)
+dev.copy(png,'./GSE36994_hg19/graphs/AnnoBar_histones_fetal.png')
+dev.off()
+
 plotDistToTSS(peakAnnoList_fetal_histones)
+dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS_histones_fetal.png', width=480, height=480)
+dev.off()
+
+plotDistToTSS(peakAnnoList_fetal_histones$TAL1_fetal)
+dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS_TAL1_fetal.png', width=480, height=240)
+dev.off()
 
 #all_genes <- lapply(peakAnnoList_fetal_histones, function(i) as.data.frame(i)$geneId)
 fetal_rp_gene_peaks <- lapply(peakAnnoList_fetal_histones, function(i) as.data.frame(i)[as.data.frame(i)$geneId %in% genes$gene_id, ])
 sapply(names(fetal_rp_gene_peaks), function (x) write.csv(fetal_rp_gene_peaks[[x]], file=paste(paste("./GSE36994_hg19/assigned_peaks/histones/", x), "csv", sep="."), row.names = FALSE )   )
 rp_genes <- lapply(peakAnnoList_fetal_histones, function(i) as.data.frame(i)$geneId[as.data.frame(i)$geneId %in% genes$gene_id])
 
+vennplot(list(GATA1 = unique(filtered_peaks_GSM970257_F$SYMBOL), TAL1 = unique(fetal_rp_gene_peaks$TAL1_fetal$SYMBOL)))
+dev.copy(png,'./GSE36994_hg19/graphs/TAL1_GATA1_overlap_fetal.png')
+dev.off()
 
-venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K4me1_fetal$SYMBOL), unique(adult_rp_gene_peaks$H3K4me1_adult$SYMBOL)), category.names = c("H3K4me1 fetal", "H3K4me1 adult"), filename = './GSE36994_hg19/graphs/H3K4me1_overlap.png',
+venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K4me1_fetal$SYMBOL), 
+                      unique(adult_rp_gene_peaks$H3K4me1_adult$SYMBOL)), 
+             category.names = c("H3K4me1 fetal", "H3K4me1 adult"), 
+             filename = './GSE36994_hg19/graphs/H3K4me1_overlap.png',
              output=TRUE, imagetype="png", height = 3000, width = 3000, ext.text = FALSE)
 
-venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K27ac_fetal$SYMBOL), unique(adult_rp_gene_peaks$H3K27ac_adult$SYMBOL)), category.names = c("H3K27ac fetal", "H3K27ac adult"), filename = './GSE36994_hg19/graphs/H3K27ac_overlap.png',
+venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K27ac_fetal$SYMBOL), 
+                      unique(adult_rp_gene_peaks$H3K27ac_adult$SYMBOL)), 
+             category.names = c("H3K27ac fetal", "H3K27ac adult"), 
+             filename = './GSE36994_hg19/graphs/H3K27ac_overlap.png',
              output=TRUE, imagetype="png", height = 3000, width = 3000, ext.text = FALSE)
 
-venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K4me3_fetal$SYMBOL), unique(adult_rp_gene_peaks$H3K4me3_adult$SYMBOL)), category.names = c("H3K4me3 fetal", "H3K4me3 adult"), filename = './GSE36994_hg19/graphs/H3K4me3_overlap.png',
+venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K4me3_fetal$SYMBOL), 
+                      unique(adult_rp_gene_peaks$H3K4me3_adult$SYMBOL)), 
+             category.names = c("H3K4me3 fetal", "H3K4me3 adult"), 
+             filename = './GSE36994_hg19/graphs/H3K4me3_overlap.png',
              output=TRUE, imagetype="png", height = 3000, width = 3000, ext.text = FALSE)
 
-venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K36me3_fetal$SYMBOL), unique(adult_rp_gene_peaks$H3K36me3_adult$SYMBOL)), category.names = c("H3K36me3 fetal", "H3K36me3 adult"), filename = './GSE36994_hg19/graphs/H3K36me3_overlap.png',
+venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K36me3_fetal$SYMBOL), 
+                      unique(adult_rp_gene_peaks$H3K36me3_adult$SYMBOL)), 
+             category.names = c("H3K36me3 fetal", "H3K36me3 adult"), 
+             filename = './GSE36994_hg19/graphs/H3K36me3_overlap.png',
              output=TRUE, imagetype="png", height = 3000, width = 3000, ext.text = FALSE)
 
-venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K9me3_fetal$SYMBOL), unique(adult_rp_gene_peaks$H3K9me3_adult$SYMBOL)), category.names = c("H3K9me3 fetal", "H3K9me3 adult"), filename = './GSE36994_hg19/graphs/H3K9me3_overlap.png',
+venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K9me3_fetal$SYMBOL), 
+                      unique(adult_rp_gene_peaks$H3K9me3_adult$SYMBOL)), 
+             category.names = c("H3K9me3 fetal", "H3K9me3 adult"), 
+             filename = './GSE36994_hg19/graphs/H3K9me3_overlap.png',
              output=TRUE, imagetype="png", height = 3000, width = 3000, ext.text = FALSE)
 
-venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K27me3_fetal$SYMBOL), unique(adult_rp_gene_peaks$H3K27me3_adult$SYMBOL)), category.names = c("H3K27me3 fetal", "H3K27me3 adult"), filename = './GSE36994_hg19/graphs/H3K27me3_overlap.png',
+venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K27me3_fetal$SYMBOL), 
+                      unique(adult_rp_gene_peaks$H3K27me3_adult$SYMBOL)), 
+             category.names = c("H3K27me3 fetal", "H3K27me3 adult"), 
+             filename = './GSE36994_hg19/graphs/H3K27me3_overlap.png',
              output=TRUE, imagetype="png", height = 3000, width = 3000, ext.text = FALSE)
