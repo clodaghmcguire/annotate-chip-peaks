@@ -436,6 +436,8 @@ venn.diagram(x = list(unique(filtered_peaks_GSM970257_F$SYMBOL), unique(window_f
 #### histone modifications ####
 adult_histones <- list( 
                     TAL1_adult = './GSE36994_hg19/GSM908055_TAL1-A_hg19.bed',
+                    CTCF_adult = './GSE36994_hg19/GSM908065_CTCF-A_peaks_hg19.bed',
+                    RAD21_adult = './GSE36994_hg19/GSM908067_RAD21-A_peaks_hg19.bed',
                     H3K27ac_adult = './GSE36994_hg19/GSM908051_H3K27ac-A_peaks_hg19.bed',
                     H3K36me3_adult = './GSE36994_hg19/GSM908047_H3K36me3-A_peaks_hg19.bed',
                     H3K27me3_adult = './GSE36994_hg19/GSM908043_H3K27me3-A_peaks_hg19.bed',
@@ -456,9 +458,8 @@ dev.off()
 
 par(mar=c(1,1,1,1))
 #tagHeatmap(tagMatrixList_adult_histones, xlim=c(-3000, 3000), color=NULL)
-peakAnnoList_adult_histones <- lapply(adult_histones, annotatePeak, TxDb=txdb, annoDb="org.Hs.eg.db",
-                       tssRegion=c(-3000, 3000), verbose=FALSE)
-plotAnnoBar(peakAnnoList_adult_histones)
+peakAnnoList_adult_histones <- lapply(adult_histones, annotatePeak, TxDb=txdb, annoDb="org.Hs.eg.db",tssRegion=c(-3000, 3000), verbose=FALSE)
+plotAnnoBar(peakAnnoList_adult_histones_TF)
 dev.copy(png,'./GSE36994_hg19/graphs/AnnoBar_histones_adult.png')
 dev.off()
 
@@ -472,6 +473,10 @@ plotDistToTSS(peakAnnoList_adult_histones$TAL1_adult)
 dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS_TAL1_adult.png', width=480, height=240)
 dev.off()
 
+plotDistToTSS(list(GATA1 = peakAnno_GSM970258_A, TAL1 = peakAnnoList_adult_histones$TAL1_adult, CTCF = peakAnnoList_adult_histones$CTCF_adult, RAD21 = peakAnnoList_adult_histones$RAD21_adult))
+dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS_TFs_adult.png', width=480, height=240)
+dev.off()
+
 #all_genes <- lapply(peakAnnoList_adult_histones, function(i) as.data.frame(i)$geneId)
 adult_rp_gene_peaks <- lapply(peakAnnoList_adult_histones, function(i) as.data.frame(i)[as.data.frame(i)$geneId %in% genes$gene_id, ])
 sapply(names(adult_rp_gene_peaks), function (x) write.csv(adult_rp_gene_peaks[[x]], file=paste(paste("./GSE36994_hg19/assigned_peaks/histones/", x), "csv", sep="."), row.names = FALSE )   )
@@ -481,8 +486,14 @@ vennplot(list(GATA1 = unique(filtered_peaks_GSM970258_A$SYMBOL), TAL1 = unique(a
 dev.copy(png,'./GSE36994_hg19/graphs/TAL1_GATA1_overlap_adult.png')
 dev.off()
 
+vennplot(list(GATA1 = unique(filtered_peaks_GSM970258_A$SYMBOL), TAL1 = unique(adult_rp_gene_peaks$TAL1_adult$SYMBOL), CTCF = unique(adult_rp_gene_peaks$CTCF_adult$SYMBOL), RAD21 = unique(adult_rp_gene_peaks$RAD21_adult$SYMBOL)))
+dev.copy(png,'./GSE36994_hg19/graphs/GATA1_RAD21_overlap_adult.png')
+dev.off()
+
 fetal_histones <- list( 
   TAL1_fetal = './GSE36994_hg19/GSM908054_TAL1-F_hg19.bed',
+  CTCF_fetal = './GSE36994_hg19/GSM908064_CTCF-F_peaks_hg19.bed',
+  RAD21_fetal = './GSE36994_hg19/GSM908066_RAD21-F_peaks_hg19.bed',
   H3K27ac_fetal = './GSE36994_hg19/GSM908050_H3K27ac-F_peaks_hg19.bed',
   H3K36me3_fetal = './GSE36994_hg19/GSM908046_H3K36me3-F_peaks_hg19.bed',
   H3K27me3_fetal = './GSE36994_hg19/GSM908042_H3K27me3-F_peaks_hg19.bed',
@@ -492,7 +503,7 @@ fetal_histones <- list(
 
 tagMatrixList_fetal_histones <- lapply(fetal_histones, getTagMatrix, windows=promoter)
 plotAvgProf(tagMatrixList_fetal_histones, xlim=c(-3000, 3000))
-dev.copy(png,'./GSE36994_hg19/graphs/AvgProf_histones_fetal.png')
+dev.copy(png,'./GSE36994_hg19/graphs/AvgProf_TFs_fetal.png')
 dev.off()
 
 plotAvgProf(tagMatrixList_fetal_histones, xlim=c(-3000, 3000), facet="row")
@@ -514,6 +525,10 @@ plotDistToTSS(peakAnnoList_fetal_histones$TAL1_fetal)
 dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS_TAL1_fetal.png', width=480, height=240)
 dev.off()
 
+plotDistToTSS(list(peakAnno_GSM970257_F, peakAnnoList_fetal_histones$TAL1_fetal, peakAnnoList_fetal_histones$CTCF_fetal, peakAnnoList_fetal_histones$RAD21_fetal))
+dev.copy(png,'./GSE36994_hg19/graphs/DistToTSS_TFs_fetal.png', width=480, height=240)
+dev.off()
+
 #all_genes <- lapply(peakAnnoList_fetal_histones, function(i) as.data.frame(i)$geneId)
 fetal_rp_gene_peaks <- lapply(peakAnnoList_fetal_histones, function(i) as.data.frame(i)[as.data.frame(i)$geneId %in% genes$gene_id, ])
 sapply(names(fetal_rp_gene_peaks), function (x) write.csv(fetal_rp_gene_peaks[[x]], file=paste(paste("./GSE36994_hg19/assigned_peaks/histones/", x), "csv", sep="."), row.names = FALSE )   )
@@ -521,6 +536,10 @@ rp_genes <- lapply(peakAnnoList_fetal_histones, function(i) as.data.frame(i)$gen
 
 vennplot(list(GATA1 = unique(filtered_peaks_GSM970257_F$SYMBOL), TAL1 = unique(fetal_rp_gene_peaks$TAL1_fetal$SYMBOL)))
 dev.copy(png,'./GSE36994_hg19/graphs/TAL1_GATA1_overlap_fetal.png')
+dev.off()
+
+vennplot(list(GATA1 = unique(filtered_peaks_GSM970257_F$SYMBOL), TAL1 = unique(fetal_rp_gene_peaks$TAL1_fetal$SYMBOL), CTCF = unique(fetal_rp_gene_peaks$CTCF_fetal$SYMBOL), RAD21 = unique(fetal_rp_gene_peaks$RAD21_fetal$SYMBOL)))
+dev.copy(png,'./GSE36994_hg19/graphs/GATA1_TFs_overlap_fetal.png')
 dev.off()
 
 venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K4me1_fetal$SYMBOL), 
@@ -558,3 +577,7 @@ venn.diagram(x = list(unique(fetal_rp_gene_peaks$H3K27me3_fetal$SYMBOL),
              category.names = c("H3K27me3 fetal", "H3K27me3 adult"), 
              filename = './GSE36994_hg19/graphs/H3K27me3_overlap.png',
              output=TRUE, imagetype="png", height = 3000, width = 3000, ext.text = FALSE)
+
+
+#Identify peaks in additional panelapp genes (ADA2, GATA1, EPO, TSR2)
+panelapp_GATA1 <- all_peaks_GATA1[all_peaks_GATA1$geneId %in% c(2623, 2056, 90121, 51816), ]
